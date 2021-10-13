@@ -14,9 +14,9 @@ class Visualizer:
     """
     Non-blocking stateful visualizer (can add, update and remove geometries).
     """
-    def __init__(self, view=None, img_save_path=None):
+    def __init__(self, view=None, img_save_path=None, visible=True):
         self.vis = o3d.visualization.Visualizer()
-        self.vis.create_window()
+        self.vis.create_window(visible=visible)
         self._view = view
         self._img_save_path = img_save_path
         if img_save_path:
@@ -45,7 +45,7 @@ class Visualizer:
     def remove(self, geometry):
         self.vis.remove_geometry(geometry)
 
-    def draw_geometries(self, new_geometries, view=None):
+    def draw_geometries(self, new_geometries, view=None, moveable=False):
         for g in new_geometries:
             if g in self.geometries:
                 self.update(g)
@@ -62,7 +62,13 @@ class Visualizer:
         view = view or self._view
         if view:
             self.set_view(view)
-        self._vis_loop()
+        self.render()
+        if moveable:
+            try:
+                self._vis_loop()
+            except KeyboardInterrupt:
+                print('interrupted')
+                pass
 
     def set_view(self, config):
         view = self.vis.get_view_control()
