@@ -3,14 +3,14 @@ import numpy as np
 import copy
 
 
-def rmseT(g_est, g_gt):
+def rmseT(estimate, truth):
     """
     Evaluation metric
     - rmseT: Root square mean error of transformation (rmseT) represents
-    the root-mean-square error between estimated transformation g_{est}
-    and ground truth transformation g_{gt}.
+    the root-mean-square error between estimated transformation
+    and ground truth transformation.
     """
-    return np.sqrt(((g_est - g_gt) ** 2).mean())
+    return np.sqrt(((estimate - truth) ** 2).mean())
 
 
 def evaluate_random(estimator):
@@ -37,7 +37,7 @@ def _post_estimates(estimates, myname):
     return res.json()['mean_rmseT']
 
 
-def evaluate_batch(estimator, myname):
+def evaluate_remote(estimator, myname):
     from threading import Pool
     threads = Pool(100)
     estimates = threads.map(_get_image) \
