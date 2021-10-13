@@ -1,16 +1,15 @@
 import os
-import threading
 import time
-import keyboard
-
 import open3d as o3d
+import shutil
 
-from robotorque.utility.positioned_frame import PositionedFrame
 
-from ovis.utility.file import make_new_dir
+def make_new_dir(path, delete_old=False):
+    if delete_old and os.path.exists(path):
+        shutil.rmtree(path)
+    os.makedirs(path)
 
-# from multiprocessing import Process, Lock
-from threading import Lock, Thread
+
 class Visualizer:
     """
     Non-blocking stateful visualizer (can add, update and remove geometries).
@@ -25,13 +24,10 @@ class Visualizer:
         self.geometries = dict()
 
     def __del__(self):
-        print('calling destructer')
         self.vis.destroy_window()
 
     def _vis_loop(self):
         while True:
-            if keyboard.is_pressed('q'):
-                break
             self.render()
             time.sleep(.01)
 
