@@ -30,6 +30,10 @@ _bolt_mesh.compute_vertex_normals()
 _bolt_mesh.compute_triangle_normals()
 
 
+def get_random_transform():
+  return TransformationMatrix.make_random(
+    TRANFORM_BOUNDS['rotation'], TRANFORM_BOUNDS['translation'])
+
 
 def get_bolt_rgbd(transform=TransformationMatrix()):
     transformed = copy.deepcopy(_bolt_mesh).transform(transform)
