@@ -24,7 +24,7 @@ class _Visualizer:
         self.geometries = dict()
 
     def __del__(self):
-        print('DELETING')
+        print('destroying visualizer')
         self.vis.destroy_window()
 
     def _vis_loop(self):
@@ -90,7 +90,7 @@ class _Visualizer:
 
 # singleton
 # don't instantiate yourself. Use this instance.
-print('CREATING')
+print('Instantiating visualizer')
 _DEFAULT_VIEW = {
     "field_of_view" : 60.0,
     "front" : [ -1, 0, 0 ],
@@ -98,4 +98,4 @@ _DEFAULT_VIEW = {
     "up" : [ 0, 0, 1.0 ],
     "zoom" : 1
 }
-visualizer = _Visualizer(view=_DEFAULT_VIEW)
+visualizer = _Visualizer(view=_DEFAULT_VIEW, visible=False)
