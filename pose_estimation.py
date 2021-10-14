@@ -1,6 +1,6 @@
 from utility.transformation_matrix import TransformationMatrix
 from utility.pose_data import get_bolt_rgbd, make_pointcloud
-from utility.pose_estimation import rmseT, evaluate_random, evaluate_batch, evaluate_remote
+from utility.pose_estimation import rmseT, evaluate_random, evaluate_batch, make_submission
 from scipy.spatial.transform import Rotation as R
 import numpy as np
 
@@ -41,7 +41,7 @@ def baseline_estimator(orig_rgbd):
 
 
 if __name__ == '__main__':
-    transform = TransformationMatrix.from_xyzwpr(0,10,10,90,0,0)
+    transform = TransformationMatrix.from_xyzwpr([0,10,10,90,0,0])
     untransformed = get_bolt_rgbd().depth
     transformed = get_bolt_rgbd(transform)
     # calculate rsmeT on my transformation estimate
@@ -53,6 +53,6 @@ if __name__ == '__main__':
     loss = evaluate_random(estimator)
     # run evaluation on batch
     loss = evaluate_batch(estimator)
-    
+
     # submit to server
-    loss = evaluate_remote(estimator)
+    loss = make_submission(estimator)
