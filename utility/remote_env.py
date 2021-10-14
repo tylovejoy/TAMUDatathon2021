@@ -1,13 +1,15 @@
 import requests
 import os
 
+
 class RemoteEnv:
-    endpoint = 'http://127.0.0.1:5000/'
-    
+    endpoint = 'http://138.197.220.122:8090/'
+
     def __init__(self):
         self.username = os.getenv('DISCORD_USERNAME')
         if not self.username:
-            raise Exception('Please set the environment variable "DISCORD_USERNAME"')
+            raise Exception(
+                'Please set the environment variable "DISCORD_USERNAME"')
         self.resetted = False
 
     def reset(self):
@@ -41,4 +43,4 @@ class RobotorqueEnv(RemoteEnv):
     """
     NUM_STEPS = 100
     OBSERVE_TIMESTEP = 0.2
-    MAX_ROBOT_SPEED = 100 # mm / s
+    MAX_ROBOT_SPEED = 100  # mm / s
