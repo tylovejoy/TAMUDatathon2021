@@ -14,6 +14,7 @@ class _Visualizer:
     """
     Non-blocking stateful visualizer (can add, update and remove geometries).
     """
+
     def __init__(self, view=None, img_save_path=None, visible=True):
         self.vis = o3d.visualization.Visualizer()
         self.vis.create_window(visible=visible)
@@ -88,14 +89,17 @@ class _Visualizer:
             raise Exception('No save path provided')
         self.vis.capture_screen_image(path)
 
+
 # singleton
 # don't instantiate yourself. Use this instance.
 print('Instantiating visualizer')
+
 _DEFAULT_VIEW = {
-    "field_of_view" : 60.0,
-    "front" : [ -1, 0, 0 ],
-    "lookat" : [ 0, 0, 0 ],
-    "up" : [ 0, 0, 1.0 ],
-    "zoom" : 1
+    "field_of_view": 60.0,
+    "front": [-1, 0, 0],
+    "lookat": [0, 0, 0],
+    "up": [0, 0, 1.0],
+    "zoom": 1
 }
+
 visualizer = _Visualizer(view=_DEFAULT_VIEW, visible=False)
