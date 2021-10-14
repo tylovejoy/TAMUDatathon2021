@@ -2,11 +2,12 @@ import requests
 import os
 
 class RemoteEnv:
+    endpoint = 'http://127.0.0.1:5000/'
+    
     def __init__(self):
         self.username = os.getenv('DISCORD_USERNAME')
         if not self.username:
             raise Exception('Please set the environment variable "DISCORD_USERNAME"')
-        self.endpoint = 'https://gm-datathon.herokuapp.com/' # 'http://127.0.0.1:5000/'
         self.resetted = False
 
     def reset(self):
