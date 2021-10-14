@@ -1,5 +1,5 @@
 from utility.transformation_matrix import TransformationMatrix
-from utility.data import get_bolt_rgbd, make_pointcloud
+from utility.pose_data import get_bolt_rgbd, make_pointcloud
 from utility.pose_estimation import rmseT, evaluate_random, evaluate_batch, evaluate_remote
 from scipy.spatial.transform import Rotation as R
 import numpy as np
@@ -41,7 +41,7 @@ def baseline_estimator(orig_rgbd):
 
 
 if __name__ == '__main__':
-    transform = TransformationMatrix.make_random(10, [0, 30, 20])
+    transform = TransformationMatrix.from_xyzwpr(0,10,10,90,0,0)
     untransformed = get_bolt_rgbd().depth
     transformed = get_bolt_rgbd(transform)
     # calculate rsmeT on my transformation estimate
@@ -55,9 +55,4 @@ if __name__ == '__main__':
     loss = evaluate_batch(estimator)
     
     # submit to server
-    import os, sys
-    username = sys.argv[1] if len(sys.argv) > 1 else os.getenv('DISCORD_USERNAME')
-    if not username:
-        raise Exception('Please provide username either as a command line argument or'
-                        ' by setting the environment variable "DISCORD_USERNAME"')
     loss = evaluate_remote(estimator)
