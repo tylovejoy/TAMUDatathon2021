@@ -14,7 +14,14 @@ DEFAULT_VIEW = {
     "zoom" : 1
 }
 
-# visualizer.set_view(DEFAULT_VIEW)
+# These are the bounds that we will transform the bolt
+# from its home pose. Make sure you can handle anything in this range.
+TRANFORM_BOUNDS = {
+  'rotation': [10, 10, 10],
+  'translation': [0, 30, 20],
+}
+
+
 _pinhole_camera_parameters = visualizer.vis.get_view_control().convert_to_pinhole_camera_parameters()
 
 _PATH_HERE = os.path.dirname(__file__)
