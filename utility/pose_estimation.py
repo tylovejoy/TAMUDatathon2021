@@ -1,10 +1,15 @@
-from .transformation_matrix import TransformationMatrix
 import numpy as np
 import requests
+import os
 from collections import namedtuple
-from utility.pose_data import TRANFORM_BOUNDS, get_bolt_depthimage, get_random_transform
+from tqdm import tqdm
 
-ImageResponse = namedtuple('ImageResponse', ['color', 'depth', 'image_id'])
+DepthImage = namedtuple('DepthImage', ['gray', 'depth'])
+
+_path_here = os.path.dirname(__file__)
+_grays = np.load(os.path.join(_path_here, '../images/gray.npy'))
+_depths = np.load(os.path.join(_path_here, '../images/depth.npy'))
+test_images = [DepthImage(gray, depth) for gray, depth in zip(_grays, _depths)]
 
 
 def transform_error(estimate, truth):
@@ -19,49 +24,26 @@ def transform_error(estimate, truth):
 
 
 def evaluate_random(estimator):
+    from utility.pose_data import get_bolt_depthimage, get_random_transform
     transform_truth = get_random_transform()
     transformed = get_bolt_depthimage(transform_truth)
     transform_estimate = estimator(transformed)
     return transform_error(transform_truth, transform_estimate)
 
 
-def evaluate_batch(estimator, count=100):
-    return np.mean([evaluate_random(estimator) for _ in range(count)])
-
-
-def _get_image():
-    endpoint = 'http://138.197.220.122:8090/'
-    response = requests.get(
-        endpoint + 'pose/transformed_bolt_depthimage/').json()
-    print(response)
-    return ImageResponse(
-        np.array(response[0]),
-        np.array(response[1]),
-        response[2]
-    )
-
-
 def _post_estimates(estimates, myname):
     endpoint = 'http://138.197.220.122:8090/'
-    res = requests.post(endpoint + 'pose/estimate/', {
-        'estimates': estimates,
-        'name': myname
+    res = requests.post(endpoint + f'pose/submit/{myname}', json={
+        'estimates': estimates.tolist(),
     })
-    return res.json()['mean_rmseT']
+    return res.json()
 
 
-def make_submission(estimator):
+def make_submission(estimates):
     import os
     username = os.getenv('DISCORD_USERNAME')
     if not username:
         raise Exception(
             'Please set the environment variable "DISCORD_USERNAME"')
 
-    estimates = []
-    for _ in range(10):
-        img = _get_image()
-        estimate = estimator(img)
-        estimates.append(
-            {'estimate': estimate.to_list(), 'image_id': img.image_id})
-    mean_rmseT = _post_estimates(estimates, username)
-    return mean_rmseT
+    return _post_estimates(estimates, username)
