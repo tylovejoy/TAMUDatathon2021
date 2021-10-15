@@ -7,6 +7,9 @@ Here at GM manafacturing, we love finding innovative ways to solve hard problems
 On the Vision as a Service (VaaS) Team, our specialty is computer vision and robotics.
 Today, you have the chance to solve a real problem we are working on, called Robotorque.
 
+![](readme_assets/robotorque1.png)
+![](readme_assets/robotorque2.png)
+
 ### Problem Definition
 The use case of Robotorque is to be able to screw bolts in on a moving fixture using a robot arm.
 At each timestep, we take a 3d picture of the fixture of interest using a lidar.
@@ -29,18 +32,17 @@ That is, you must control the robot based off where you predict the bolt is at a
 The seperation between stage 1 and stage 2 is just to help you break down the problem. 
 In the end, you will only be judged based off your performance on stage 2.
 
+![](readme_assets/pose_example.png)
+Here you can see a bolt that has been translated and rotated. Using a lidar camera, we can get both a grayscale image (sometimes called texture) and a depth cloud (that can be converted into a pointcloud). Given these images, would you be able to predict what the transform was? 
 
 ## How do I win?
-At any time during the competition, you are allowed to submit your solution to our backend and we
-will automatically grade you. You can query for the highscores and see where you stand. 
+There are 3 sub-challenges: pose-estimation, robot-control, and combined. The grand prize will go to the top scorer of the combined challenge. However, our runner up prizes will go the winners of pose-estimation and robot-control. We think it may be easiest to solve the pose and robot challenge independently first (you could split your team up and work on these in parallel) and then combine them to produce a solution to the combined challenge... but in the end, your workflow is up to you!
 
-If your team is the top N scores (N TBD) at the end of the competition, 
-your team will be asked to give a presentation to the GM judges.
+At any time during the competition, you are allowed to submit your solution to our backend and we will automatically grade you. You can query for the highscores for any of the three subchallenges and see where you stand. 
+
+If your team is the top N scores (N TBD) at the end of the competition for a particular sub-challenge, your team will be asked to give a presentation to the GM judges.
 The final prizes will be chosen according to the GM judges' discretion based on a
 combination of final score and how much we like your solution. :)
-
-We will also give an honorable mention to those teams which have the highest stage1 score.
-
 
 ## Resources
 - [Tranformation Matrix](https://en.wikipedia.org/wiki/Transformation_matrix)
@@ -51,26 +53,23 @@ We will also give an honorable mention to those teams which have the highest sta
 
 ## How to get started
 We have provided starter code along with a baseline solution to part 1 and part 2.
-Please make sure to register yourself USING YOUR DISCORD USERNAME.
-Please also have everyone on your team post in the *General Motors* discord channel
-that you are working on this challenge.
-Running the example code will submit the baseline solution under your username
+Please make set the environment variable DISCORD_USERNAME before submitting your solution.
+Please also have everyone on your team post in the *General Motors* discord channel that you are working on this challenge!!
+We have written a baseline solution that will get you some results and enter you into the contest. You can then improve on this baseline!
+Running through the start_here.ipynb will submit the baseline solution under your username
 and will enter you into the contest.
-
-### Demo
-Open [this google colab](https://colab.research.google.com/drive/1jCrbcQwIKktIp0ea_v_4kHsZ71vmoaiK#scrollTo=Ux0rXpz1i8T7)
-for a really short demo. However, we recommend not using colab for this challenge and instead doing it locally... its just better.
 
 ## Quick start
 To get started locally, run the following on your local machine (assuming your have conda installed):
 ```
-git clone gm-datathon.github.com
-cd gm-datathon
+git clone https://github.com/josiahcoad/datathon-client
+cd datathon-client
 conda create -n gm-env python=3.8
-conda activate gm-env 
+conda activate gm-env
 pip install -r requirements.txt
-python pose_estimation.py YOUR_DISCORD_NAME
-python robot_control.py YOUR_DISCORD_NAME
-python scoring_client.py YOUR_DISCORD_NAME
+export DISCORD_USERNAME=<your discord username>
+Download the pose data from [shorturl.at/lrKL8](shorturl.at/lrKL8) and put the two files in the images folder
+python sanity_check.py
 ```
-Feel free to check out the notebooks for some more examples and starter code!
+If you've gotten this far, you are ready to go and you've already made your first submission!
+Head over to start_here.ipynb for a tutorial to get you started coding. 
