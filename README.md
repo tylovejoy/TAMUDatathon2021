@@ -11,26 +11,14 @@ Today, you have the chance to solve a real problem we are working on, called Rob
 ![](readme_assets/robotorque2.png)
 
 ### Problem Definition
-The use case of Robotorque is to be able to screw bolts in on a moving fixture using a robot arm.
-At each timestep, we take a 3d picture of the fixture of interest using a lidar.
-Our goal is to be able to use the image
-input to be able to control the robot to move to the bolt and screw it in.
-This problem could theoretically be solved in an end-to-end solution (perhaps using reinforcement learning).
-If you think you can do this, go right ahead!
-However, another common approach is to divide this problem into two stages.
-First, try to estimate the pose (rotation and translation) of the bolt, and then move the 
-robot to match the pose.
+The use case of Robotorque is to be able to screw bolts in on a moving fixture using a robot arm. At each timestep, we take a 3d picture of the fixture of interest using a lidar.
+Our goal is to be able to use the depth image input to be able to control the robot to move to the bolt and screw it in. This problem could theoretically be solved in an end-to-end solution (perhaps using reinforcement learning). If you think you can do this, go right ahead! However, another common approach is to divide this problem into two stages. First, try to estimate the pose (rotation and translation) of the bolt, and assume you have the pose of the bolt to solve the robot control, then combine these solutions to get a full solution.
 
-We leave it up to you to solve these problems: stage 1 is pose estimation and stage 2 is robot control. 
-In stage 1, you will be given an RGB-depth image of a bolt that has been transformed.
-Your goal is to estimate the pose of that bolt based off the image.
-In stage 2, we expose a simulator endpoint which streams RGB-depth images. On our backend, we are transforming
-the bolt according to physical simulation models that are hidden to you. For each image, you must return
-where you want the robot to go. Your goal is to keep the robot arm touching the face of the bolt. You
-are rewarded accordingly. The catch is this: your observation cadence is much less frequent than your control cadence.
+In the pose-estimation challenge, you will be given an depth image of a bolt that has been transformed. Your goal is to estimate the pose of that bolt based off the image.
+In the robot-control challenge, we expose a simulator endpoint which streams bolt poses. On our backend, we are determining the transforms according to physical simulation models that are hidden to you. For each pose, you must return where you want the robot to go. Your goal is to keep the robot arm touching the face of the bolt. You are rewarded accordingly. The catch is this: your observation cadence is much less frequent than your control cadence.
 That is, you must control the robot based off where you predict the bolt is at any time.
-The seperation between stage 1 and stage 2 is just to help you break down the problem. 
-In the end, you will only be judged based off your performance on stage 2.
+
+When you feel like you are ready, you can combine your solutions to pose challenge and robot challenge and submit to the combined challenge which now gives you depth images of the bolts and you have to control the robot off of (instead of the underlying pose of the bolt).
 
 ![](readme_assets/pose_example.png)
 Here you can see a bolt that has been translated and rotated. Using a lidar camera, we can get both a grayscale image (sometimes called texture) and a depth cloud (that can be converted into a pointcloud). Given these images, would you be able to predict what the transform was? 
