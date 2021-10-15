@@ -29,18 +29,18 @@ class TransformationMatrix(np.ndarray):
     A vector can be displaced by a transformation matrix symbolically via v_c=T_{cb}v_b.
     TODO: support sheering and scaling
     """
-    def __new__(cls, array=np.identity(4, dtype=np.float32)):
+    def __new__(cls, array=np.identity(4, dtype=np.float32)) -> 'TransformationMatrix':
         if not (array.shape == (4, 4) and np.allclose(array[3, :], [0, 0, 0, 1])):
             raise Exception('Input array is malformed')
 
         return np.asarray(array).view(cls)
 
     @staticmethod
-    def compose(rotation_matrix: NDArray[(3, 3)], translation: NDArray[3]):
+    def compose(rotation_matrix: NDArray[(3, 3)], translation: NDArray[3]) -> 'TransformationMatrix':
         return TransformationMatrix(_compose(rotation_matrix, translation))
 
     @staticmethod
-    def from_xyzwpr(xyzwpr: NDArray[6]):
+    def from_xyzwpr(xyzwpr: NDArray[6]) -> 'TransformationMatrix':
         xyzwpr = np.array(xyzwpr)
         return TransformationMatrix.compose(
             Rotation.from_euler('xyz', xyzwpr[3:], degrees=True).as_matrix(),
@@ -48,7 +48,7 @@ class TransformationMatrix(np.ndarray):
         )
 
     @staticmethod
-    def make_random(rotation_bounds=40, translation_bounds=40):
+    def make_random(rotation_bounds, translation_bounds) -> 'TransformationMatrix':
         import numbers
 
         def preprocess(bounds):
@@ -129,5 +129,5 @@ if __name__ == '__main__':
     assert np.allclose(arr2.transform(v).T, [[0, 1, 1]])
     arr3 = TransformationMatrix.compose(np.identity(3), np.zeros(3))
     assert np.allclose(arr3, np.identity(4))
-    arr4 = TransformationMatrix().make_random()
+    arr4 = TransformationMatrix().make_random(40, 40)
     print(arr4)

@@ -1,5 +1,6 @@
 import os
 import time
+from typing import List
 import open3d as o3d
 import shutil
 
@@ -13,6 +14,7 @@ def make_new_dir(path, delete_old=False):
 class _Visualizer:
     """
     Non-blocking stateful visualizer (can add, update and remove geometries).
+    Will keep a window open until you delete the instance.
     """
 
     def __init__(self, view=None, img_save_path=None, visible=True):
@@ -47,7 +49,14 @@ class _Visualizer:
     def remove(self, geometry):
         self.vis.remove_geometry(geometry)
 
-    def draw_geometries(self, new_geometries, view=None, moveable=False):
+    def draw_geometries(self, new_geometries: List[o3d.geometry.Geometry], view: dict=None, moveable=False):
+        """
+        This should be the only function you need. Pass in a list of geometries to visualize them.
+        Pass in a custom view if you want to view from a different angle. 
+        Set moveable to True if you want to be able to jog/rotate the camera via click and drag. 
+        If True, the window will block your program until you do a keyboard interrupt.
+        If False, the window will not block but you will not be able to move the camera. 
+        """
         for g in new_geometries:
             if g in self.geometries:
                 self.update(g)

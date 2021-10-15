@@ -9,14 +9,6 @@ from collections import namedtuple
 
 DepthImage = namedtuple('DepthImage', ['gray', 'depth'])
 
-DEFAULT_VIEW = {
-    "field_of_view": 60.0,
-    "front": [-1, 0, 0],
-    "lookat": [0, 0, 0],
-    "up": [0, 0, 1.0],
-    "zoom": 1
-}
-
 # These are the bounds that we will transform the bolt
 # from its home pose. Make sure you can handle anything in this range.
 TRANFORM_BOUNDS = {
@@ -24,7 +16,14 @@ TRANFORM_BOUNDS = {
     'translation': [(0, 30), (-45, 45), (-20, 20)],
 }
 
-visualizer.set_view(DEFAULT_VIEW)
+_DEFAULT_VIEW = {
+    "field_of_view": 60.0,
+    "front": [-1, 0, 0],
+    "lookat": [0, 0, 0],
+    "up": [0, 0, 1.0],
+    "zoom": 1
+}
+visualizer.set_view(_DEFAULT_VIEW)
 _pinhole_camera_parameters = \
     visualizer.vis.get_view_control().convert_to_pinhole_camera_parameters()
 
@@ -34,15 +33,15 @@ _bolt_mesh.compute_vertex_normals()
 _bolt_mesh.compute_triangle_normals()
 
 
-def get_random_transform():
+def get_random_transform() -> TransformationMatrix:
     return TransformationMatrix.make_random(
         TRANFORM_BOUNDS['rotation'], TRANFORM_BOUNDS['translation'])
 
 
-def get_bolt_depthimage(transform=TransformationMatrix()):
+def get_bolt_depthimage(transform=TransformationMatrix()) -> DepthImage:
     transformed = copy.deepcopy(_bolt_mesh).transform(transform)
     visualizer.draw_geometries(
-        [transformed], view=DEFAULT_VIEW, moveable=False)
+        [transformed], view=_DEFAULT_VIEW, moveable=False)
 
     color = visualizer.vis.capture_screen_float_buffer(False)
     depth = visualizer.vis.capture_depth_float_buffer(False)
@@ -56,7 +55,7 @@ def get_bolt_depthimage(transform=TransformationMatrix()):
     return DepthImage(np.asarray(depthimage.color), depth)
 
 
-def show_depthimage(depthimage):
+def show_depthimage(depthimage: DepthImage) -> None:
     plt.figure(figsize=(15, 15))
     plt.subplot(121)
     plt.title('Depth')
@@ -67,7 +66,7 @@ def show_depthimage(depthimage):
     plt.show()
 
 
-def make_pointcloud(depthimage):
+def make_pointcloud(depthimage: DepthImage) -> o3d.geometry.PointCloud:
     pcd = o3d.geometry.PointCloud()\
         .create_from_rgbd_image(
         o3d.geometry.RGBDImage.create_from_color_and_depth(

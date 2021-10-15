@@ -1,8 +1,12 @@
+from typing import List
 import numpy as np
 import requests
 import os
 from collections import namedtuple
-from tqdm import tqdm
+from typing import Callable
+
+from utility.transformation_matrix import TransformationMatrix
+from .scoring_client import _get_username
 
 DepthImage = namedtuple('DepthImage', ['gray', 'depth'])
 
@@ -12,7 +16,7 @@ _depths = np.load(os.path.join(_path_here, '../images/depth.npy'))
 test_images = [DepthImage(gray, depth) for gray, depth in zip(_grays, _depths)]
 
 
-def transform_error(estimate, truth):
+def transform_error(estimate: TransformationMatrix, truth: TransformationMatrix) -> float:
     """
     Evaluation metric
     - Root square mean error of the concatenated
@@ -23,7 +27,7 @@ def transform_error(estimate, truth):
     return np.sqrt(((estimate - truth) ** 2).mean())
 
 
-def evaluate_random(estimator):
+def evaluate_random(estimator: Callable[[DepthImage], TransformationMatrix]) -> float:
     from utility.pose_data import get_bolt_depthimage, get_random_transform
     transform_truth = get_random_transform()
     transformed = get_bolt_depthimage(transform_truth)
@@ -31,19 +35,22 @@ def evaluate_random(estimator):
     return transform_error(transform_truth, transform_estimate)
 
 
-def _post_estimates(estimates, myname):
+class SubmissionResult:
+    def __init__(self, json_response) -> None:
+        self.mean_error = json_response['mean_error']
+        self.ranking = json_response['ranking']
+
+    def __str__(self):
+        return f'Mean rmse={self.mean_error:.4f}\n'\
+               f'Your ranking: #{self.ranking}'
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
+
+def make_submission(estimates: List[TransformationMatrix]) -> SubmissionResult:
     endpoint = 'http://138.197.220.122:8090/'
-    res = requests.post(endpoint + f'pose/submit/{myname}', json={
+    res = requests.post(endpoint + f'pose/submit/{_get_username()}', json={
         'estimates': estimates.tolist(),
     })
-    return res.json()
-
-
-def make_submission(estimates):
-    import os
-    username = os.getenv('DISCORD_USERNAME')
-    if not username:
-        raise Exception(
-            'Please set the environment variable "DISCORD_USERNAME"')
-
-    return _post_estimates(estimates, username)
+    return SubmissionResult(res.json())
