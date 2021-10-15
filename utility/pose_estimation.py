@@ -2,26 +2,27 @@ from .transformation_matrix import TransformationMatrix
 import numpy as np
 import requests
 from collections import namedtuple
-from utility.pose_data import TRANFORM_BOUNDS, get_bolt_rgbd, get_random_transform
+from utility.pose_data import TRANFORM_BOUNDS, get_bolt_depthimage, get_random_transform
 
 ImageResponse = namedtuple('ImageResponse', ['color', 'depth', 'image_id'])
 
 
-def rmseT(estimate, truth):
+def transform_error(estimate, truth):
     """
     Evaluation metric
-    - rmseT: Root square mean error of transformation (rmseT) represents
-    the root-mean-square error between estimated transformation
-    and ground truth transformation.
+    - Root square mean error of the concatenated
+    rotation (extrinsic euler in degrees) and translation
     """
+    estimate = np.concatenate([estimate.rotation_euler, estimate.translation])
+    truth = np.concatenate([truth.rotation_euler, truth.translation])
     return np.sqrt(((estimate - truth) ** 2).mean())
 
 
 def evaluate_random(estimator):
     transform_truth = get_random_transform()
-    transformed = get_bolt_rgbd(transform_truth)
+    transformed = get_bolt_depthimage(transform_truth)
     transform_estimate = estimator(transformed)
-    return rmseT(transform_truth, transform_estimate)
+    return transform_error(transform_truth, transform_estimate)
 
 
 def evaluate_batch(estimator, count=100):
@@ -30,7 +31,8 @@ def evaluate_batch(estimator, count=100):
 
 def _get_image():
     endpoint = 'http://138.197.220.122:8090/'
-    response = requests.get(endpoint + 'pose/transformed_bolt_rgbd/').json()
+    response = requests.get(
+        endpoint + 'pose/transformed_bolt_depthimage/').json()
     print(response)
     return ImageResponse(
         np.array(response[0]),

@@ -5,7 +5,8 @@ from typing import Any, Union
 from scipy.spatial.transform import Rotation
 
 
-def _compose(rotation_matrix, translation_vector: NDArray[(3,)]):
+def _compose(rotation_matrix: NDArray[(3, 3)], translation_vector: NDArray[(3,)]):
+    assert rotation_matrix.shape == (3, 3) and translation_vector.shape == (3,)
     m = np.identity(4)
     m[:3, 3] = np.squeeze(translation_vector)
     m[:3, :3] = rotation_matrix
@@ -29,17 +30,18 @@ class TransformationMatrix(np.ndarray):
     TODO: support sheering and scaling
     """
     def __new__(cls, array=np.identity(4, dtype=np.float32)):
-        if not (array.shape == (4,4) and np.allclose(array[3,:], [0,0,0,1])):
+        if not (array.shape == (4, 4) and np.allclose(array[3, :], [0, 0, 0, 1])):
             raise Exception('Input array is malformed')
 
         return np.asarray(array).view(cls)
 
     @staticmethod
-    def compose(rotation_matrix: NDArray[(3,3)], translation: NDArray[3]):
+    def compose(rotation_matrix: NDArray[(3, 3)], translation: NDArray[3]):
         return TransformationMatrix(_compose(rotation_matrix, translation))
 
     @staticmethod
     def from_xyzwpr(xyzwpr: NDArray[6]):
+        xyzwpr = np.array(xyzwpr)
         return TransformationMatrix.compose(
             Rotation.from_euler('xyz', xyzwpr[3:], degrees=True).as_matrix(),
             xyzwpr[:3]
@@ -48,6 +50,7 @@ class TransformationMatrix(np.ndarray):
     @staticmethod
     def make_random(rotation_bounds=40, translation_bounds=40):
         import numbers
+
         def preprocess(bounds):
             if isinstance(bounds, numbers.Number):
                 bounds = np.ones(3) * bounds
@@ -57,7 +60,7 @@ class TransformationMatrix(np.ndarray):
                     -bounds.reshape(-1, 1),
                     bounds.reshape(-1, 1)])
             return bounds
-        
+
         def box_uniform(bounds):
             return np.array([np.random.uniform(low, hgh) for low, hgh in bounds])
 
@@ -74,8 +77,8 @@ class TransformationMatrix(np.ndarray):
         return Rotation.from_matrix(self.rotation_matrix)
 
     @property
-    def rotation_matrix(self) -> NDArray[(3,3)]:
-        return self[:3,:3]
+    def rotation_matrix(self) -> NDArray[(3, 3)]:
+        return np.array(self)[:3, :3]
 
     @property
     def rotation_euler(self) -> NDArray[3]:
@@ -84,27 +87,29 @@ class TransformationMatrix(np.ndarray):
 
     @property
     def translation(self) -> NDArray[3]:
-        return self[:3,3]
+        return np.array(self)[:3, 3]
 
     @property
     def inv(self) -> 'TransformationMatrix':
         # faster inverse using property of transformation matrix
         arr = deepcopy(self)
         t = arr.rotation_matrix.T
-        arr[:3,:3] = t
-        arr[:3,3] = -t @ arr.translation
+        arr[:3, :3] = t
+        arr[:3, 3] = -t @ arr.translation
         return arr
 
     def transform(self, x: Union[NDArray[(3, Any)], NDArray[3]]) -> NDArray[(3, Any)]:
         if len(x.shape) == 1:
-            x = x[:,np.newaxis]
+            x = x[:, np.newaxis]
         x = np.vstack([x, np.ones(x.shape[1])])
-        return (self @ x)[:3,:]
+        return (self @ x)[:3, :]
 
     def __str__(self):
-        return 'x={0}, y={1}, z={2}\nroll={3}°, pitch={4}°, yaw={5}°'\
+        if (not self.shape[0] == 4 and self.shape[1] == 4):
+            # trying to print a subarray, ie "print(transform[:3])"
+            return np.array(self)
+        return 'x={0}, y={1}, z={2}\nx_rotate={3}°, y_rotate={4}°, z_rotate={5}°'\
             .format(*self.translation.round(2), *self.rotation_euler.round(2))
-
 
 
 if __name__ == '__main__':
@@ -112,16 +117,16 @@ if __name__ == '__main__':
     assert np.allclose(arr, np.identity(4))
     assert np.allclose(arr.translation, np.zeros(3))
     assert np.allclose(arr.rotation_matrix, np.identity(3))
-    assert isinstance(arr.inv, TransformationMatrix) 
+    assert isinstance(arr.inv, TransformationMatrix)
     assert np.allclose(arr.inv, np.identity(4))
-    arr2 = TransformationMatrix.from_xyzwpr([0,1,0,90,0,0])
-    assert np.allclose(arr2.rotation_matrix, 
-       [[ 1,  0,  0,],
-        [ 0,  0, -1,],
-        [ 0,  1,  0,]])
-    assert np.allclose(arr2.translation, [0,1,0])
-    v = np.array([0,1,0])
-    assert np.allclose(arr2.transform(v).T, [[0,1,1]])
+    arr2 = TransformationMatrix.from_xyzwpr([0, 1, 0, 90, 0, 0])
+    assert np.allclose(arr2.rotation_matrix,
+                       [[1,  0,  0, ],
+                        [0,  0, -1, ],
+                           [0,  1,  0, ]])
+    assert np.allclose(arr2.translation, [0, 1, 0])
+    v = np.array([0, 1, 0])
+    assert np.allclose(arr2.transform(v).T, [[0, 1, 1]])
     arr3 = TransformationMatrix.compose(np.identity(3), np.zeros(3))
     assert np.allclose(arr3, np.identity(4))
     arr4 = TransformationMatrix().make_random()

@@ -1,17 +1,17 @@
 from utility.transformation_matrix import TransformationMatrix
-from utility.pose_data import get_bolt_rgbd, make_pointcloud
-from utility.pose_estimation import rmseT, evaluate_random, evaluate_batch, make_submission
+from utility.pose_data import get_bolt_depthimage, make_pointcloud
+from utility.pose_estimation import transform_error, evaluate_random, evaluate_batch, make_submission
 from scipy.spatial.transform import Rotation as R
 import numpy as np
 
 
-def baseline_estimator(orig_rgbd):
-    orig_pcd = make_pointcloud(orig_rgbd)
+def baseline_estimator(orig_depthimage):
+    orig_pcd = make_pointcloud(orig_depthimage)
 
     def fit_plane(pcd):
         plane_model, inliers = pcd.segment_plane(distance_threshold=0.01,
-                                        ransac_n=3,
-                                        num_iterations=1000)
+                                                 ransac_n=3,
+                                                 num_iterations=1000)
         inlier_cloud = pcd.select_by_index(inliers)
         return plane_model, inlier_cloud
 
@@ -27,8 +27,8 @@ def baseline_estimator(orig_rgbd):
         rotvec = unit * np.dot(orig_normal-trns_normal)
         return R.from_rotvec(rotvec).as_matrix()
 
-    def estimator(transformed_rgbd):
-        trns_pcd = make_pointcloud(transformed_rgbd)
+    def estimator(transformed_depthimage):
+        trns_pcd = make_pointcloud(transformed_depthimage)
 
         orig_normal, src_center = get_bolt_head(orig_pcd)
         trns_normal, trns_center = get_bolt_head(trns_pcd)
@@ -41,13 +41,13 @@ def baseline_estimator(orig_rgbd):
 
 
 if __name__ == '__main__':
-    transform = TransformationMatrix.from_xyzwpr([0,10,10,90,0,0])
-    untransformed = get_bolt_rgbd().depth
-    transformed = get_bolt_rgbd(transform)
+    transform = TransformationMatrix.from_xyzwpr([0, 10, 10, 90, 0, 0])
+    untransformed = get_bolt_depthimage().depth
+    transformed = get_bolt_depthimage(transform)
     # calculate rsmeT on my transformation estimate
     estimator = baseline_estimator(untransformed)
     estimate = estimator(transformed)
-    loss = rmseT(estimate, transform)
+    loss = transform_error(estimate, transform)
     print(loss)
     # use utility function to do this
     loss = evaluate_random(estimator)

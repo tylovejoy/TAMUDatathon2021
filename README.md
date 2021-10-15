@@ -44,6 +44,8 @@ We will also give an honorable mention to those teams which have the highest sta
 
 ## Resources
 - [Tranformation Matrix](https://en.wikipedia.org/wiki/Transformation_matrix)
+- [Video on transformation matrices](https://www.youtube.com/watch?v=vlb3P7arbkU&ab_channel=NorthwesternRobotics)
+- [Right hand rule](https://en.wikipedia.org/wiki/Right-hand_rule)
 - [Open3d](http://www.open3d.org/docs/release/introduction.html)
  
 

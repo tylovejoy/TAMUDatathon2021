@@ -102,4 +102,4 @@ _DEFAULT_VIEW = {
     "zoom": 1
 }
 
-visualizer = _Visualizer(view=_DEFAULT_VIEW, visible=False)
+visualizer = _Visualizer(view=_DEFAULT_VIEW, visible=True)
