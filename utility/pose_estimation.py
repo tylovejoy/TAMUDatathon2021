@@ -10,11 +10,14 @@ from .scoring_client import _get_username
 
 DepthImage = namedtuple('DepthImage', ['gray', 'depth'])
 
-_path_here = os.path.dirname(__file__)
-_grays = np.load(os.path.join(_path_here, '../images/gray.npy'))
-_depths = np.load(os.path.join(_path_here, '../images/depth.npy'))
-test_images = [DepthImage(gray, depth) for gray, depth in zip(_grays, _depths)]
-
+try:
+  _path_here = os.path.dirname(__file__)
+  _grays = np.load(os.path.join(_path_here, '../images/gray.npy'))
+  _depths = np.load(os.path.join(_path_here, '../images/depth.npy'))
+  test_images = [DepthImage(gray, depth) for gray, depth in zip(_grays, _depths)]
+except:
+  print('Please download the pose data from shorturl.at/lrKL8 and put the two files in the images folder')
+  
 
 def transform_error(estimate: TransformationMatrix, truth: TransformationMatrix) -> float:
     """
