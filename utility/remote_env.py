@@ -1,9 +1,11 @@
+from typing import Any
 import requests
 from utility.pose_data import get_bolt_depthimage
 
 from utility.transformation_matrix import TransformationMatrix
 from .scoring_client import _get_username, Challenge
 import numpy as np
+from nptyping import NDArray
 
 
 class RemoteEnv:
@@ -64,7 +66,7 @@ class RobotorqueEnv(RemoteEnv):
         s = super().reset()
         return self._parse_state(s)
 
-    def step(self, robot_positions):
+    def step(self, robot_positions: NDArray[Any, float]):
         assert len(robot_positions) == self.CONTROLS_PER_CAPTURE
         s, r, d, i = super().step(robot_positions, self.challenge)
         s = self._parse_state(s)

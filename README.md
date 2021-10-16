@@ -1,9 +1,8 @@
 # Robotorque
 
-[Watch intro video here](youtube.com)
 
 ### Introduction
-Here at GM manafacturing, we love finding innovative ways to solve hard problems.
+Here at GM manafacturing IT, we love finding innovative ways to solve hard problems.
 On the Vision as a Service (VaaS) Team, our specialty is computer vision and robotics.
 Today, you have the chance to solve a real problem we are working on, called Robotorque.
 
@@ -12,9 +11,9 @@ Today, you have the chance to solve a real problem we are working on, called Rob
 
 ### Problem Definition
 The use case of Robotorque is to be able to screw bolts in on a moving fixture using a robot arm. At each timestep, we take a 3d picture of the fixture of interest using a lidar.
-Our goal is to be able to use the depth image input to be able to control the robot to move to the bolt and screw it in. This problem could theoretically be solved in an end-to-end solution (perhaps using reinforcement learning). If you think you can do this, go right ahead! However, another common approach is to divide this problem into two stages. First, try to estimate the pose (rotation and translation) of the bolt, and assume you have the pose of the bolt to solve the robot control, then combine these solutions to get a full solution.
+Our goal is to be able to use the depth image input to be able to control the robot to move to the bolt and screw it in. This problem could theoretically be solved in an end-to-end solution (perhaps using reinforcement learning). If you think you can do this, go right ahead! However, another common approach is to divide this problem into two parts. In one part, you try to estimate the pose (rotation and translation) of the bolt. In the other, you and assume you have the pose of the bolt and solve the robot control, then combine these solutions to get a full solution.
 
-In the pose-estimation challenge, you will be given an depth image of a bolt that has been transformed. Your goal is to estimate the pose of that bolt based off the image.
+In the pose-estimation challenge, you will be given a depth image of a bolt that has been transformed. Your goal is to estimate the pose of that bolt based off the image.
 In the robot-control challenge, we expose a simulator endpoint which streams bolt poses. On our backend, we are determining the transforms according to physical simulation models that are hidden to you. For each pose, you must return where you want the robot to go. Your goal is to keep the robot arm touching the face of the bolt. You are rewarded accordingly. The catch is this: your observation cadence is much less frequent than your control cadence.
 That is, you must control the robot based off where you predict the bolt is at any time.
 
@@ -41,10 +40,10 @@ combination of final score and how much we like your solution. :)
 
 ## How to get started
 We have provided starter code along with a baseline solution to part 1 and part 2.
-Please make set the environment variable DISCORD_USERNAME before submitting your solution.
+Please set the environment variable DISCORD_USERNAME before submitting your solution.
 Please also have everyone on your team post in the *General Motors* discord channel that you are working on this challenge!!
 We have written a baseline solution that will get you some results and enter you into the contest. You can then improve on this baseline!
-Running through the start_here.ipynb will submit the baseline solution under your username
+Running through the sanity_check.py will submit the baseline solution under your username
 and will enter you into the contest.
 
 ## Quick start
@@ -56,7 +55,7 @@ conda create -n gm-env python=3.8
 conda activate gm-env
 pip install -r requirements.txt
 export DISCORD_USERNAME=<your discord username>
-Download the pose data from [shorturl.at/lrKL8](shorturl.at/lrKL8) and put the two files in the images folder
+Download the pose data from shorturl.at/lrKL8 and put the two files in the datathon-client/images folder
 python sanity_check.py
 ```
 If you've gotten this far, you are ready to go and you've already made your first submission!
