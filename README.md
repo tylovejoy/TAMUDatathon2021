@@ -23,6 +23,9 @@ When you feel like you are ready, you can combine your solutions to pose challen
 ![](readme_assets/pose_example.png)
 Here you can see a bolt that has been translated and rotated. Using a lidar camera, we can get both a grayscale image (sometimes called texture) and a depth cloud (that can be converted into a pointcloud). Given these images, would you be able to predict what the transform was? 
 
+![](readme_assets/diagram.png)
+You can solve the combined challenge in one go. Or you can solve the pose-etimation challenge and robot-control challenge and them combine them to solve the combined challenge.
+
 ## How do I win?
 There are 3 sub-challenges: pose-estimation, robot-control, and combined. The grand prize will go to the top scorer of the combined challenge. However, our runner up prizes will go the winners of pose-estimation and robot-control. We think it may be easiest to solve the pose and robot challenge independently first (you could split your team up and work on these in parallel) and then combine them to produce a solution to the combined challenge... but in the end, your workflow is up to you!
 
