@@ -17,26 +17,27 @@ print('2/5: Visualization Completed Successfully')
 
 # make a dummy pose estimator that submits an identity matrix 
 estimator = lambda x: transformation_matrix.TransformationMatrix()
-estimates = estimator(pose_estimation.test_images)
+estimates = [estimator(img) for img in pose_estimation.test_images]
 pose_estimation.make_submission(estimates)
 
 print('3/5: Pose Estimation Completed Successfully')
 
 # make a dummy robot controller that submits a sequence of 0 locations to go to 
-controller = lambda state: numpy.zeros(remote_env.RobotorqueEnv.CONTROLS_PER_CAPTURE)
-env = remote_env.RobotorqueEnv(challenge=scoring_client.Challenge.ROBOT)
+controller = lambda state: numpy.zeros(remote_env.RobotorqueEnvironment.CONTROLS_PER_CAPTURE)
+env = remote_env.RobotorqueEnvironment(challenge=scoring_client.Challenge.ROBOT)
 state = env.reset()
 done = False
-while not done:
+print('Stepping through simulation (will take a minute or two)...')
+for i in tqdm.tqdm(list(range(remote_env.RobotorqueEnvironment.NUM_STEPS))):
     action = controller(state)
-    state, reward, done, info = env.step()
-
+    state, reward, done, info = env.step(action)
+assert done
 print('4/5: Robot Control Completed Successfully')
 
-print('Pose Estimation\n', scoring_client.get_highscores(scoring_client.Challenge.POSE))
-print('Robot Estimation\n', scoring_client.get_highscores(scoring_client.Challenge.ROBOT))
-print('Combined Estimation\n', scoring_client.get_highscores(scoring_client.Challenge.COMBINED))
+print('\nPose Estimation Highscores\n', scoring_client.get_highscores(scoring_client.Challenge.POSE))
+print('\nRobot Estimation Highscores\n', scoring_client.get_highscores(scoring_client.Challenge.ROBOT))
+print('\nCombined Estimation Highscores\n', scoring_client.get_highscores(scoring_client.Challenge.COMBINED))
 
 print('5/5: Scoring Queries Completed Successfully')
 
-print('All checks complete. Sanity checked :)')
+print('\033[92m' + 'All checks complete. Sanity checked :)' + '\033[0m')

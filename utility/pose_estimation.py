@@ -16,7 +16,7 @@ try:
   _depths = np.load(os.path.join(_path_here, '../images/depth.npy'))
   test_images = [DepthImage(gray, depth) for gray, depth in zip(_grays, _depths)]
 except:
-  raise Exception('Please download the pose data from shorturl.at/lrKL8 and put the two files in the images folder')
+  raise Exception('Please download the data from shorturl.at/lrKL8 and put the two files in a datathon-client/images folder')
   
 
 def transform_error(estimate: TransformationMatrix, truth: TransformationMatrix) -> float:
@@ -52,8 +52,9 @@ class SubmissionResult:
 
 
 def make_submission(estimates: List[TransformationMatrix]) -> SubmissionResult:
+    assert len(estimates) == len(test_images)
     endpoint = 'http://138.197.220.122:8090/'
     res = requests.post(endpoint + f'pose/submit/{_get_username()}', json={
-        'estimates': estimates.tolist(),
+        'estimates': np.array(estimates).tolist(),
     })
     return SubmissionResult(res.json())

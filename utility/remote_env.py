@@ -1,6 +1,6 @@
-from typing import Any
+from typing import Any, Dict, Union, Tuple
 import requests
-from utility.pose_data import get_bolt_depthimage
+from utility.pose_data import DepthImage, get_bolt_depthimage
 
 from utility.transformation_matrix import TransformationMatrix
 from .scoring_client import _get_username, Challenge
@@ -8,7 +8,7 @@ import numpy as np
 from nptyping import NDArray
 
 
-class RemoteEnv:
+class RemoteEnvironment:
     endpoint = 'http://138.197.220.122:8090'
 
     def __init__(self):
@@ -26,7 +26,7 @@ class RemoteEnv:
             raise Exception('Must call reset.')
 
         response = requests.post(self.endpoint + f'/robot/step/{challenge}/{self.username}', json={
-            'action': action
+            'action': np.array(action).tolist()
         })
 
         data = response.json()
@@ -36,14 +36,7 @@ class RemoteEnv:
         return data['state'], data['reward'], data['done'], data['info']
 
 
-class RobotorqueEnv(RemoteEnv):
-    """
-    state: array of length 2. First element is the position of robot,
-        second is the (last-observed) position of the bolt
-    reward: max(5 - mm between bolt and robot, 0)
-    done: boolean. True if finished episode (at 200 steps)
-    info: data that might be helpful for debugging but can't use to make predictions
-    """
+class RobotorqueEnvironment(RemoteEnvironment):
     NUM_STEPS = 200
     OBSERVE_TIMESTEP = 0.2  # s
     MAX_ROBOT_SPEED = 100  # mm / s
@@ -66,8 +59,18 @@ class RobotorqueEnv(RemoteEnv):
         s = super().reset()
         return self._parse_state(s)
 
-    def step(self, robot_positions: NDArray[Any, float]):
+    def step(self, robot_positions: NDArray[Any, float]) -> \
+            Tuple[Union[DepthImage, TransformationMatrix], float, bool, Dict]:
+        """Call this function to progress the physical environment one timestep.
+        
+        state is going to be a pose if you have chosen Challenge.ROBOT, else it will be
+        a DepthImage if you have chosen Challenge.COMBINED.
+        info contains a dictonary of information that may be interesting to you for debugging purposes
+        but you are NOT allowed to use for your solution.
+        When you reach the NUM_STEPS, done will be True and you can access your ranking through
+        the info variable.
+        """
         assert len(robot_positions) == self.CONTROLS_PER_CAPTURE
-        s, r, d, i = super().step(robot_positions, self.challenge)
-        s = self._parse_state(s)
-        return s, r, d, i
+        state, reward, done, info = super().step(robot_positions, self.challenge)
+        state = self._parse_state(state)
+        return state, reward, done, info
