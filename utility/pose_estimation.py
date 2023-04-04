@@ -52,9 +52,12 @@ class SubmissionResult:
 
 
 def make_submission(estimates: List[TransformationMatrix]) -> SubmissionResult:
-    assert len(estimates) == len(test_images)
-    endpoint = 'http://138.197.220.122:8090/'
-    res = requests.post(endpoint + f'pose/submit/{_get_username()}', json={
-        'estimates': np.array(estimates).tolist(),
-    })
-    return SubmissionResult(res.json())
+  assert len(estimates) == len(test_images)
+  endpoint = 'http://138.197.220.122:8090/'
+  res = requests.post(
+      f'{endpoint}pose/submit/{_get_username()}',
+      json={
+          'estimates': np.array(estimates).tolist(),
+      },
+  )
+  return SubmissionResult(res.json())

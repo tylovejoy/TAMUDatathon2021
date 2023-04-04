@@ -24,7 +24,7 @@ class _Visualizer:
         self._img_save_path = img_save_path
         if img_save_path:
             make_new_dir(img_save_path, delete_old=True)
-        self.geometries = dict()
+        self.geometries = {}
 
     def __del__(self):
         print('destroying visualizer')
@@ -63,15 +63,14 @@ class _Visualizer:
             else:
                 self.add(g)
         # remove anything we are currently displaying that isn't in new_geometries
-        updated = dict()
+        updated = {}
         for g in self.geometries:
             if g in new_geometries:
                 updated[g] = g
             else:
                 self.remove(self.geometries[g])
         self.geometries = updated
-        view = view or self._view
-        if view:
+        if view := view or self._view:
             self.set_view(view)
         self.render()
         if moveable:

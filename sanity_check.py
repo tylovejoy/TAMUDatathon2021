@@ -28,7 +28,7 @@ env = remote_env.RobotorqueEnvironment(challenge=scoring_client.Challenge.ROBOT)
 state = env.reset()
 done = False
 print('Stepping through simulation (will take a minute or two)...')
-for i in tqdm.tqdm(list(range(remote_env.RobotorqueEnvironment.NUM_STEPS))):
+for _ in tqdm.tqdm(list(range(remote_env.RobotorqueEnvironment.NUM_STEPS))):
     action = controller(state)
     state, reward, done, info = env.step(action)
 assert done

@@ -17,17 +17,17 @@ class RemoteEnvironment:
 
     def reset(self):
         self.resetted = True
-        response = requests.get(
-            self.endpoint + f'/robot/reset/{self.username}')
+        response = requests.get(f'{self.endpoint}/robot/reset/{self.username}')
         return response.json()['state']
 
     def step(self, action, challenge):
         if not self.resetted:
             raise Exception('Must call reset.')
 
-        response = requests.post(self.endpoint + f'/robot/step/{challenge}/{self.username}', json={
-            'action': np.array(action).tolist()
-        })
+        response = requests.post(
+            f'{self.endpoint}/robot/step/{challenge}/{self.username}',
+            json={'action': np.array(action).tolist()},
+        )
 
         data = response.json()
         if data['done']:
