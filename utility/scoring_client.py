@@ -13,11 +13,11 @@ class Challenge:
 
 
 def _get_username() -> str:
-    username = os.getenv('DISCORD_USERNAME')
-    if not username:
+    if username := os.getenv('DISCORD_USERNAME'):
+        return username
+    else:
         raise Exception(
             'Please set the environment variable "DISCORD_USERNAME"')
-    return username
 
 
 class HighscoresResult:

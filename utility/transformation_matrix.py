@@ -105,11 +105,11 @@ class TransformationMatrix(np.ndarray):
         return (self @ x)[:3, :]
 
     def __str__(self):
-        if (not self.shape[0] == 4 and self.shape[1] == 4):
+        if self.shape[0] != 4 and self.shape[1] == 4:
             # trying to print a subarray, ie "print(transform[:3])"
             return np.array(self)
         return 'x={0}, y={1}, z={2}\nx_rotate={3}°, y_rotate={4}°, z_rotate={5}°'\
-            .format(*self.translation.round(2), *self.rotation_euler.round(2))
+                .format(*self.translation.round(2), *self.rotation_euler.round(2))
 
 
 if __name__ == '__main__':
